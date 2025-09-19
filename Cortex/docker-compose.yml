@@ -1,0 +1,46 @@
+version: "3"
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.9
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - xpack.security.enabled=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    networks:
+      - cortex-net
+
+  cortex:
+    image: thehiveproject/cortex:latest
+    container_name: cortex
+    depends_on:
+      - elasticsearch
+    ports:
+      - "9001:9001"
+    environment:
+      - JOB_DIRECTORY=/tmp/cortex-jobs
+      - DOCKER_JOB_DIRECTORY=/var/run/cortex/jobs
+      - CORTEX_ES_HOSTS=http://elasticsearch:9200
+      - CORTEX_API_KEY=test_api_key
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - cortex_jobs:/var/run/cortex/jobs
+    networks:
+      - cortex-net
+
+volumes:
+  elasticsearch_data:
+  cortex_jobs:
+
+networks:
+  cortex-net:
+    driver: bridge
