@@ -1,0 +1,11 @@
+# HIVE data directories (bind mounts) - exclude from Git
+cassandra/data/
+cassandra/logs/
+elasticsearch/data/
+elasticsearch/logs/
+thehive/data/files/
+thehive/logs/
+cortex/cortex-jobs/
+cortex/logs/
+cortex/neurons/
+nginx/certs/
